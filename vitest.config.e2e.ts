@@ -7,5 +7,8 @@ export default defineConfig({
     globals: true,
     root: './',
     include: ['**/*.e2e-spec.ts'],
+    // Every file boots the app against the same database.
+    fileParallelism: false,
+    hookTimeout: 30_000,
   },
 });
