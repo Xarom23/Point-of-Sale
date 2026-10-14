@@ -60,9 +60,9 @@ Reglas:
 **Test:** `test/app.e2e-spec.ts` → `connects to PostgreSQL`.
 
 ### US-02 · Setup del frontend (M, 2)
-- [ ] `web/` con Vite, React, TypeScript, Tailwind, shadcn/ui y Vitest.
-- [ ] Cliente HTTP con la URL base tomada de `VITE_API_URL`.
-- [ ] Layout con sidebar y rutas protegidas.
+- [x] `web/` con Vite, React, TypeScript, Tailwind, shadcn/ui y Vitest.
+- [x] Cliente HTTP con la URL base tomada de `VITE_API_URL`.
+- [x] Layout con sidebar y rutas protegidas.
 
 ## Épica 1 — Usuarios y roles
 
@@ -77,7 +77,7 @@ Reglas:
 ### US-04 · Autorización por rol (M, 2)
 - [x] Endpoints sin token devuelven 401.
 - [x] Un cajero que intenta escribir en productos, o acceder a usuarios o reportes, recibe 403.
-- [ ] El frontend oculta el menú que el rol no puede usar. *(pendiente: llega con US-02)*
+- [x] El frontend oculta el menú que el rol no puede usar.
 
 **Tests primero (e2e):** sin token → 401; cajero en `POST /products` → 403; admin → 201.
 
