@@ -68,9 +68,9 @@ Reglas:
 
 ### US-03 · Login (M, 3)
 *Como usuario quiero iniciar sesión para acceder según mi rol.*
-- [ ] `POST /auth/login` devuelve un JWT si las credenciales son válidas y 401 si no.
-- [ ] Las contraseñas se guardan con bcrypt y `password` nunca aparece en una respuesta.
-- [ ] Un seed crea el admin inicial desde `.env`.
+- [x] `POST /auth/login` devuelve un JWT si las credenciales son válidas y 401 si no.
+- [x] Las contraseñas se guardan con bcrypt y `password` nunca aparece en una respuesta.
+- [x] Un seed crea el admin inicial desde `.env`.
 
 **Tests primero (e2e):** login válido → 200 + `access_token`; contraseña incorrecta → 401; la respuesta no contiene `password`.
 
