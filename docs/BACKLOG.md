@@ -75,9 +75,9 @@ Reglas:
 **Tests primero (e2e):** login válido → 200 + `access_token`; contraseña incorrecta → 401; la respuesta no contiene `password`.
 
 ### US-04 · Autorización por rol (M, 2)
-- [ ] Endpoints sin token devuelven 401.
-- [ ] Un cajero que intenta escribir en productos, o acceder a usuarios o reportes, recibe 403.
-- [ ] El frontend oculta el menú que el rol no puede usar.
+- [x] Endpoints sin token devuelven 401.
+- [x] Un cajero que intenta escribir en productos, o acceder a usuarios o reportes, recibe 403.
+- [ ] El frontend oculta el menú que el rol no puede usar. *(pendiente: llega con US-02)*
 
 **Tests primero (e2e):** sin token → 401; cajero en `POST /products` → 403; admin → 201.
 
