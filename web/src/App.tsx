@@ -1,0 +1,35 @@
+import { Navigate, Route, Routes } from 'react-router'
+import { useAuth } from '@/auth'
+import { Layout } from '@/Layout'
+import { LoginPage } from '@/LoginPage'
+import { navFor } from '@/nav'
+
+// Only the routes the user's role may see are registered, so any other URL
+// (including /login once signed in) falls through to the redirect.
+export default function App() {
+  const { user } = useAuth()
+
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    )
+  }
+
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        {navFor(user.role).map(({ path, label }) => (
+          <Route
+            key={path}
+            path={path}
+            element={<h1 className="text-2xl font-semibold">{label}</h1>}
+          />
+        ))}
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+}
