@@ -6,5 +6,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { tsconfigPaths: true },
+  // The checkout imports the server's totals calculation (src/sales/totals.ts).
+  server: { fs: { allow: ['.', '../src/sales'] } },
   test: { globals: true },
 })
