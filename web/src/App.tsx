@@ -5,8 +5,10 @@ import { Layout } from '@/Layout'
 import { LoginPage } from '@/LoginPage'
 import { navFor } from '@/nav'
 import { CategoriesPage } from '@/pages/CategoriesPage'
+import { ProductsPage } from '@/pages/ProductsPage'
 
 const PAGES: Record<string, ReactNode> = {
+  '/products': <ProductsPage />,
   '/categories': <CategoriesPage />,
 }
 
