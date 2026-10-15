@@ -137,8 +137,8 @@ Reglas:
 ## Épica 4 — Reportes
 
 ### US-13 · Historial de ventas (M, 2)
-- [ ] Lista paginada con filtro `from`/`to`.
-- [ ] El cajero solo ve sus propias ventas y el admin ve todas.
+- [x] Lista paginada con filtro `from`/`to`.
+- [x] El cajero solo ve sus propias ventas y el admin ve todas.
 
 **Tests primero (e2e):** un cajero no ve las ventas de otro cajero.
 
