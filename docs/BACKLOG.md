@@ -143,12 +143,12 @@ Reglas:
 **Tests primero (e2e):** un cajero no ve las ventas de otro cajero.
 
 ### US-14 · Resumen diario y mensual (M, 2)
-- [ ] `GET /reports/summary?from&to&groupBy=day|month` devuelve el número de ventas y el total de cada periodo.
+- [x] `GET /reports/summary?from&to&groupBy=day|month` devuelve el número de ventas y el total de cada periodo.
 
 **Tests primero (e2e):** con ventas sembradas en 2 días distintos se obtienen 2 filas con los totales correctos.
 
 ### US-15 · Productos más vendidos (M, 1)
-- [ ] Top 10 por unidades vendidas dentro de un rango de fechas.
+- [x] Top 10 por unidades vendidas dentro de un rango de fechas.
 
 ### US-16 · Dashboard (S, 2)
 - [ ] Tarjetas con las ventas de hoy, las ventas del mes y la cantidad de productos con stock bajo, más el top 5 de productos.
