@@ -8,9 +8,11 @@ import { CategoriesPage } from '@/pages/CategoriesPage'
 import { CheckoutPage } from '@/pages/CheckoutPage'
 import { ProductsPage } from '@/pages/ProductsPage'
 import { ReceiptPage } from '@/pages/ReceiptPage'
+import { SalesHistoryPage } from '@/pages/SalesHistoryPage'
 
 const PAGES: Record<string, ReactNode> = {
   '/': <CheckoutPage />,
+  '/sales': <SalesHistoryPage />,
   '/products': <ProductsPage />,
   '/categories': <CategoriesPage />,
 }
