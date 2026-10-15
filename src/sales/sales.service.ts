@@ -5,7 +5,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataSource, In } from 'typeorm';
+import type { JwtPayload } from '../auth/auth.guard.js';
 import { Product } from '../products/product.entity.js';
+import { Role } from '../users/user.entity.js';
 import { Sale } from './sale.entity.js';
 import { calculateTotals, type Discount } from './totals.js';
 
@@ -64,14 +66,20 @@ export class SalesService {
       const { id } = await em.save(
         em.create(Sale, { userId, ...totals, items: lines }),
       );
-      return this.findOne(id, em.getRepository(Sale));
+      return this.findOne(id, undefined, em.getRepository(Sale));
     });
   }
 
-  findOne(id: number, sales = this.dataSource.getRepository(Sale)) {
+  /** A cashier only sees their own sales; others look like a 404. */
+  findOne(
+    id: number,
+    viewer?: JwtPayload,
+    sales = this.dataSource.getRepository(Sale),
+  ) {
+    const ownOnly = viewer?.role === Role.Cashier;
     return sales.findOneOrFail({
-      where: { id },
-      relations: { items: true },
+      where: { id, ...(ownOnly && { userId: viewer.sub }) },
+      relations: { items: true, user: true },
       order: { items: { id: 'ASC' } },
     });
   }
