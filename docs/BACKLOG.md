@@ -89,15 +89,15 @@ Reglas:
 
 ### US-06 · CRUD de categorías (M, 2)
 - [x] El admin crea, edita y elimina categorías.
-- [ ] Eliminar una categoría que tiene productos devuelve 409. *(se cubre en US-07)*
+- [x] Eliminar una categoría que tiene productos devuelve 409.
 
 **Tests primero (e2e):** CRUD completo; borrar una categoría con productos → 409.
 
 ### US-07 · CRUD de productos (M, 3)
-- [ ] El admin crea y edita productos con nombre, SKU único, precio, stock, stock mínimo y categoría.
-- [ ] Validación con DTOs: precio ≥ 0 y stock ≥ 0 (si no, 400).
-- [ ] Borrar un producto lo desactiva (soft delete) y deja de aparecer en el listado.
-- [ ] Búsqueda por nombre o SKU (`?q=`).
+- [x] El admin crea y edita productos con nombre, SKU único, precio, stock, stock mínimo y categoría.
+- [x] Validación con DTOs: precio ≥ 0 y stock ≥ 0 (si no, 400).
+- [x] Borrar un producto lo desactiva (soft delete) y deja de aparecer en el listado.
+- [x] Búsqueda por nombre o SKU (`?q=`).
 
 **Tests primero (e2e):** SKU duplicado → 409; precio negativo → 400; un producto borrado no aparece en `GET /products`; `?q=` filtra.
 
