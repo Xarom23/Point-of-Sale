@@ -95,7 +95,7 @@ describe('Sales (e2e)', () => {
       ),
     );
 
-    const statuses = attempts.map((r) => r.status).sort();
+    const statuses = attempts.map((r) => r.status).sort((x, y) => x - y);
     expect(statuses).toEqual([201, 201, 409, 409, 409]);
     expect(await stockOf(2)).toBe(0);
   });
