@@ -188,10 +188,10 @@ export function CheckoutPage() {
           <dd className="text-right">{formatMoney(totals.subtotalCents)}</dd>
           <dt>Descuento</dt>
           <dd className="text-right">−{formatMoney(totals.discountCents)}</dd>
-          <dt>IVA ({Math.round(taxRate * 100)}%)</dt>
-          <dd className="text-right">{formatMoney(totals.taxCents)}</dd>
           <dt className="text-lg font-semibold">Total</dt>
           <dd className="text-right text-lg font-semibold">{formatMoney(totals.totalCents)}</dd>
+          <dt className="text-sm text-muted-foreground">IVA incluido ({Math.round(taxRate * 100)}%)</dt>
+          <dd className="text-right text-sm text-muted-foreground">{formatMoney(totals.taxCents)}</dd>
         </dl>
 
         {error && (

@@ -1,6 +1,6 @@
 import { createTestApp } from './helpers.js';
 
-// TAX_RATE=0.16 (see .env.example)
+// TAX_RATE=0.16 (see .env.example); prices include tax
 describe('Sales (e2e)', () => {
   let ctx: Awaited<ReturnType<typeof createTestApp>>;
   const admin = () => ctx.http('admin');
@@ -52,8 +52,8 @@ describe('Sales (e2e)', () => {
       userId: ctx.users.cashier.id,
       subtotalCents: 4500,
       discountCents: 450,
-      taxCents: 648,
-      totalCents: 4698,
+      taxCents: 559,
+      totalCents: 4050,
     });
     expect(res.body.items).toEqual([
       expect.objectContaining({
@@ -120,7 +120,11 @@ describe('Sales (e2e)', () => {
         subtotalCents: 1,
       })
       .expect(201);
-    expect(res.body).toMatchObject({ subtotalCents: 1000, totalCents: 1160 });
+    expect(res.body).toMatchObject({
+      subtotalCents: 1000,
+      taxCents: 138,
+      totalCents: 1000,
+    });
   });
 
   it('charges the price at sale time even if it changes later', async () => {

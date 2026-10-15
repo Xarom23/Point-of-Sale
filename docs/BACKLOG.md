@@ -9,7 +9,7 @@ Sprint único de 5 días. Prioridad: **M** = Must y **S** = Should (se recortan 
 | ORM | TypeORM (`autoLoadEntities: true`) |
 | Estructura | Backend en la raíz y frontend en `web/` |
 | Dinero | Enteros en centavos (`price_cents`) |
-| Impuesto | Tasa global en `.env` (`TAX_RATE=0.16`). Los precios **no incluyen IVA**: se suma sobre `subtotal − descuento` |
+| Impuesto | Tasa global en `.env` (`TAX_RATE=0.16`). Los precios **incluyen IVA** (el precio de mostrador es el que se cobra); el IVA se desglosa del total después del descuento |
 | Descuento | Por venta, en porcentaje o monto fijo |
 | Stock | En la transacción de venta los productos se bloquean con `SELECT … FOR UPDATE` (en orden de id), se valida el stock y se descuenta. Un test e2e de concurrencia lo comprueba |
 | Stock bajo | Campo `min_stock`, filtro `?lowStock=true` y badge en la UI |
