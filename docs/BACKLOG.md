@@ -124,9 +124,9 @@ Reglas:
 - E2E: una venta válida descuenta el stock; si un ítem no alcanza → 409 y el stock de **todos** los ítems queda intacto; un `total` enviado por el cliente se ignora.
 
 ### US-11 · Pantalla de caja (M, 3)
-- [ ] Buscar un producto y agregarlo al carrito.
-- [ ] Cambiar la cantidad o quitar productos.
-- [ ] Totales en vivo y botón "Cobrar".
+- [x] Buscar un producto y agregarlo al carrito.
+- [x] Cambiar la cantidad o quitar productos.
+- [x] Totales en vivo y botón "Cobrar".
 
 **Tests primero (unitario web):** reducer del carrito (agregar, sumar cantidad, quitar).
 
