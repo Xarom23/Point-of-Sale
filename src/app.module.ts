@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
 import { DbExceptionFilter } from './common/db-exception.filter.js';
 import { ProductsModule } from './products/products.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 import { SalesModule } from './sales/sales.module.js';
 
 @Module({
@@ -38,6 +39,7 @@ import { SalesModule } from './sales/sales.module.js';
     CategoriesModule,
     ProductsModule,
     SalesModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [
