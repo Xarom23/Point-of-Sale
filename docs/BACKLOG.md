@@ -9,9 +9,9 @@ Sprint único de 5 días. Prioridad: **M** = Must y **S** = Should (se recortan 
 | ORM | TypeORM (`autoLoadEntities: true`) |
 | Estructura | Backend en la raíz y frontend en `web/` |
 | Dinero | Enteros en centavos (`price_cents`) |
-| Impuesto | Tasa global en `.env` (`TAX_RATE=0.16`) |
+| Impuesto | Tasa global en `.env` (`TAX_RATE=0.16`). Los precios **no incluyen IVA**: se suma sobre `subtotal − descuento` |
 | Descuento | Por venta, en porcentaje o monto fijo |
-| Stock | Se descuenta dentro de la transacción de venta: `UPDATE ... SET stock = stock - q WHERE id = :id AND stock >= q` |
+| Stock | En la transacción de venta los productos se bloquean con `SELECT … FOR UPDATE` (en orden de id), se valida el stock y se descuenta. Un test e2e de concurrencia lo comprueba |
 | Stock bajo | Campo `min_stock`, filtro `?lowStock=true` y badge en la UI |
 | Recibo | Vista HTML imprimible (`window.print()`) |
 | Auth | `@nestjs/jwt` + `bcrypt` + `RolesGuard` (`admin` / `cashier`) |
@@ -114,10 +114,10 @@ Reglas:
 
 ### US-10 · Registrar venta (M, 5) ⭐
 *Como cajero quiero cobrar un carrito para registrar la venta y descontar el inventario.*
-- [ ] `POST /sales` con `items[]` y `discount` se ejecuta en una sola transacción.
-- [ ] Si algún producto no tiene stock suficiente, la venta completa se rechaza con 409 y no se descuenta nada.
-- [ ] El servidor calcula subtotal, descuento, impuesto y total, y ignora cualquier monto que mande el cliente.
-- [ ] El stock baja al confirmar la venta.
+- [x] `POST /sales` con `items[]` y `discount` se ejecuta en una sola transacción.
+- [x] Si algún producto no tiene stock suficiente, la venta completa se rechaza con 409 y no se descuenta nada.
+- [x] El servidor calcula subtotal, descuento, impuesto y total, y ignora cualquier monto que mande el cliente.
+- [x] El stock baja al confirmar la venta.
 
 **Tests primero:**
 - Unitario `calculateTotals(items, discount, taxRate)`: con descuento porcentual, con descuento fijo, cuando el descuento es mayor al subtotal y el redondeo a centavos.
