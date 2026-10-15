@@ -103,7 +103,7 @@ Reglas:
 
 ### US-08 · Alerta de stock bajo (M, 1)
 - [x] `GET /products?lowStock=true` devuelve solo los productos con `stock <= min_stock`.
-- [x] Badge rojo en la lista de productos. *(el del dashboard llega con US-16)*
+- [x] Badge rojo en la lista de productos y aviso en el dashboard.
 
 **Tests primero (e2e):** con 2 productos (uno bajo y uno normal), solo se devuelve el bajo.
 
@@ -151,7 +151,7 @@ Reglas:
 - [x] Top 10 por unidades vendidas dentro de un rango de fechas.
 
 ### US-16 · Dashboard (S, 2)
-- [ ] Tarjetas con las ventas de hoy, las ventas del mes y la cantidad de productos con stock bajo, más el top 5 de productos.
+- [x] Tarjetas con las ventas de hoy, las ventas del mes y la cantidad de productos con stock bajo, más el top 5 de productos.
 
 **Total: 37 pts.**
 
