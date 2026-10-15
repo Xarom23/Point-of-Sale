@@ -5,6 +5,7 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { DataSource } from 'typeorm';
 import { AppModule } from './../src/app.module.js';
+import { Role as UserRole, User } from './../src/users/user.entity.js';
 
 type Role = 'admin' | 'cashier';
 
@@ -16,10 +17,24 @@ export async function createTestApp() {
   const app: INestApplication<App> = moduleRef.createNestApplication();
   await app.init();
 
+  // Tokens belong to real rows because sales reference their user.
+  const userRepo = app.get(DataSource).getRepository(User);
+  const users: Record<Role, User> = {
+    admin: await userRepo.findOneByOrFail({ role: UserRole.Admin }),
+    cashier:
+      (await userRepo.findOneBy({ username: 'test-cashier' })) ??
+      (await userRepo.save({
+        username: 'test-cashier',
+        passwordHash: '!', // not a bcrypt hash, so it can never log in
+        role: UserRole.Cashier,
+      })),
+  };
   const jwt = app.get(JwtService);
+  const sign = ({ id, username, role }: User) =>
+    jwt.signAsync({ sub: id, username, role });
   const tokens: Record<Role, string> = {
-    admin: await jwt.signAsync({ sub: 1, username: 'admin', role: 'admin' }),
-    cashier: await jwt.signAsync({ sub: 2, username: 'cash', role: 'cashier' }),
+    admin: await sign(users.admin),
+    cashier: await sign(users.cashier),
   };
 
   /** HTTP client authenticated as `role`, or anonymous when omitted. */
@@ -42,5 +57,5 @@ export async function createTestApp() {
       .get(DataSource)
       .query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY CASCADE`);
 
-  return { app, http, truncate };
+  return { app, http, truncate, users };
 }
