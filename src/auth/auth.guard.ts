@@ -9,8 +9,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import type { Request } from 'express';
-import { Role } from '../users/user.entity.js';
+import { Repository } from 'typeorm';
+import { Role, User } from '../users/user.entity.js';
 
 export interface JwtPayload {
   sub: number;
@@ -35,13 +37,14 @@ export const CurrentUser = createParamDecorator(
     ctx.switchToHttp().getRequest<AuthRequest>().user,
 );
 
-// ponytail: trusts the token until it expires (JWT_EXPIRES_IN), so a
-// deactivated user keeps access until then; add a DB lookup if that matters.
+// The token proves identity; the users table decides whether that user may
+// still act and with which role, so deactivation and demotion apply at once.
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwt: JwtService,
     private readonly reflector: Reflector,
+    @InjectRepository(User) private readonly users: Repository<User>,
   ) {}
 
   async canActivate(ctx: ExecutionContext) {
@@ -53,11 +56,15 @@ export class AuthGuard implements CanActivate {
     const req = ctx.switchToHttp().getRequest<AuthRequest>();
     const [type, token] = req.headers.authorization?.split(' ') ?? [];
     if (type !== 'Bearer' || !token) throw new UnauthorizedException();
+    let payload: JwtPayload;
     try {
-      req.user = await this.jwt.verifyAsync<JwtPayload>(token);
+      payload = await this.jwt.verifyAsync<JwtPayload>(token);
     } catch {
       throw new UnauthorizedException();
     }
+    const user = await this.users.findOneBy({ id: payload.sub, active: true });
+    if (!user) throw new UnauthorizedException();
+    req.user = { ...payload, username: user.username, role: user.role };
 
     const roles = this.reflector.getAllAndOverride<Role[]>(ROLES, targets);
     if (roles && !roles.includes(req.user.role)) {

@@ -1,5 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
+import { Role } from './../src/users/user.entity.js';
 import { createTestApp } from './helpers.js';
 
 type Method = 'get' | 'post' | 'patch' | 'delete';
@@ -192,10 +193,8 @@ describe('Access control (e2e)', () => {
     });
 
     it('ignores a role claim that does not match the user', async () => {
-      const auth = await bearer({
-        ...ctx.users.cashier,
-        role: 'admin' as never,
-      });
+      const { id, username } = ctx.users.cashier;
+      const auth = await bearer({ id, username, role: Role.Admin });
       await ctx.http().get('/users').set('Authorization', auth).expect(403);
     });
   });
