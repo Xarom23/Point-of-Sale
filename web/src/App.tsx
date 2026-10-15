@@ -1,8 +1,14 @@
+import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 import { useAuth } from '@/auth'
 import { Layout } from '@/Layout'
 import { LoginPage } from '@/LoginPage'
 import { navFor } from '@/nav'
+import { CategoriesPage } from '@/pages/CategoriesPage'
+
+const PAGES: Record<string, ReactNode> = {
+  '/categories': <CategoriesPage />,
+}
 
 // Only the routes the user's role may see are registered, so any other URL
 // (including /login once signed in) falls through to the redirect.
@@ -25,7 +31,9 @@ export default function App() {
           <Route
             key={path}
             path={path}
-            element={<h1 className="text-2xl font-semibold">{label}</h1>}
+            element={
+              PAGES[path] ?? <h1 className="text-2xl font-semibold">{label}</h1>
+            }
           />
         ))}
       </Route>
