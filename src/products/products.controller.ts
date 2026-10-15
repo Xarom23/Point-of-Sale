@@ -58,7 +58,7 @@ export class ProductsController {
   ) {}
 
   @Get()
-  findAll(@Query('q') q?: string) {
+  findAll(@Query('q') q?: string, @Query('lowStock') lowStock?: string) {
     const query = this.products
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.category', 'c')
@@ -67,6 +67,7 @@ export class ProductsController {
     if (q) {
       query.andWhere('(p.name ILIKE :q OR p.sku ILIKE :q)', { q: `%${q}%` });
     }
+    if (lowStock === 'true') query.andWhere('p.stock <= p.minStock');
     return query.getMany();
   }
 
