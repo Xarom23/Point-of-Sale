@@ -128,3 +128,10 @@
     @apply font-sans;
     }
 }
+/* Receipt: thermal printer roll width. */
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 4mm;
+  }
+}

@@ -159,6 +159,26 @@ describe('Sales (e2e)', () => {
     await cashier().post('/sales', body).expect(400);
   });
 
+  it('returns the receipt with its cashier and date', async () => {
+    await cashier().post('/sales', { items: [{ productId: 1, qty: 1 }] });
+
+    const res = await cashier().get('/sales/1').expect(200);
+
+    expect(res.body).toMatchObject({
+      id: 1,
+      user: { id: ctx.users.cashier.id, username: 'test-cashier' },
+      items: [expect.objectContaining({ name: 'A' })],
+    });
+    expect(new Date(res.body.createdAt).getTime()).not.toBeNaN();
+    expect(JSON.stringify(res.body)).not.toMatch(/password/i);
+  });
+
+  it("hides another user's sale from a cashier with 404", async () => {
+    await admin().post('/sales', { items: [{ productId: 1, qty: 1 }] });
+    await cashier().get('/sales/1').expect(404);
+    await admin().get('/sales/1').expect(200);
+  });
+
   it('exposes the tax rate for the checkout preview', async () => {
     const res = await cashier().get('/sales/config').expect(200);
     expect(res.body).toEqual({ taxRate: 0.16 });

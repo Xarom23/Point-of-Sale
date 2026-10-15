@@ -131,8 +131,8 @@ Reglas:
 **Tests primero (unitario web):** reducer del carrito (agregar, sumar cantidad, quitar).
 
 ### US-12 · Recibo (M, 2)
-- [ ] Después de cobrar se muestra un recibo con folio, fecha, cajero, artículos y totales, y se puede imprimir.
-- [ ] `GET /sales/:id` permite reimprimirlo.
+- [x] Después de cobrar se muestra un recibo con folio, fecha, cajero, artículos y totales, y se puede imprimir.
+- [x] `GET /sales/:id` permite reimprimirlo.
 
 ## Épica 4 — Reportes
 
