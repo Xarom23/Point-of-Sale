@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Type } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
@@ -9,10 +9,11 @@ import { Role as UserRole, User } from './../src/users/user.entity.js';
 
 type Role = 'admin' | 'cashier';
 
-/** Boots the whole app against the dev database with role-scoped clients. */
-export async function createTestApp() {
+/** Boots the whole app against the test database with role-scoped clients. */
+export async function createTestApp(controllers: Type[] = []) {
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule],
+    controllers,
   }).compile();
   const app: INestApplication<App> = moduleRef.createNestApplication();
   await app.init();
