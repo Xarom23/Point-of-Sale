@@ -16,6 +16,10 @@ export class SalesService {
     private readonly config: ConfigService,
   ) {}
 
+  get taxRate() {
+    return Number(this.config.getOrThrow('TAX_RATE'));
+  }
+
   create(
     userId: number,
     items: { productId: number; qty: number }[],
@@ -56,11 +60,7 @@ export class SalesService {
         qty: qtyOf(p),
         unitPriceCents: p.priceCents,
       }));
-      const totals = calculateTotals(
-        lines,
-        discount,
-        Number(this.config.getOrThrow('TAX_RATE')),
-      );
+      const totals = calculateTotals(lines, discount, this.taxRate);
       const { id } = await em.save(
         em.create(Sale, { userId, ...totals, items: lines }),
       );

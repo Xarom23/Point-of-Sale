@@ -65,6 +65,12 @@ export class SalesController {
     return this.sales.create(user.sub, items, discount);
   }
 
+  // Declared before :id so "config" isn't parsed as an id.
+  @Get('config')
+  config() {
+    return { taxRate: this.sales.taxRate };
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.sales.findOne(id);
