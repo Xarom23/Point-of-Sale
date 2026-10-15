@@ -6,6 +6,7 @@ import { LoginPage } from '@/LoginPage'
 import { navFor } from '@/nav'
 import { CategoriesPage } from '@/pages/CategoriesPage'
 import { CheckoutPage } from '@/pages/CheckoutPage'
+import { DashboardPage } from '@/pages/DashboardPage'
 import { ProductsPage } from '@/pages/ProductsPage'
 import { ReceiptPage } from '@/pages/ReceiptPage'
 import { ReportsPage } from '@/pages/ReportsPage'
@@ -13,6 +14,7 @@ import { SalesHistoryPage } from '@/pages/SalesHistoryPage'
 import { UsersPage } from '@/pages/UsersPage'
 
 const PAGES: Record<string, ReactNode> = {
+  '/dashboard': <DashboardPage />,
   '/users': <UsersPage />,
   '/reports': <ReportsPage />,
   '/': <CheckoutPage />,
@@ -38,18 +40,13 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        {navFor(user.role).map(({ path, label }) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              PAGES[path] ?? <h1 className="text-2xl font-semibold">{label}</h1>
-            }
-          />
+        {navFor(user.role).map(({ path }) => (
+          <Route key={path} path={path} element={PAGES[path]} />
         ))}
       </Route>
       <Route path="/receipt/:id" element={<ReceiptPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Unknown URLs land on the role's first section. */}
+      <Route path="*" element={<Navigate to={navFor(user.role)[0].path} replace />} />
     </Routes>
   )
 }

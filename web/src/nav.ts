@@ -1,5 +1,6 @@
 import {
   ChartColumn,
+  LayoutDashboard,
   Package,
   Receipt,
   ShoppingCart,
@@ -13,6 +14,7 @@ const ALL: Role[] = ['admin', 'cashier']
 const ADMIN: Role[] = ['admin']
 
 export const NAV = [
+  { path: '/dashboard', label: 'Inicio', icon: LayoutDashboard, roles: ADMIN },
   { path: '/', label: 'Caja', icon: ShoppingCart, roles: ALL },
   { path: '/sales', label: 'Ventas', icon: Receipt, roles: ALL },
   { path: '/products', label: 'Productos', icon: Package, roles: ADMIN },
