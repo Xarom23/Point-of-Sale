@@ -1,10 +1,12 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { AppController } from './app.controller.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
+import { CategoriesModule } from './categories/categories.module.js';
+import { DbExceptionFilter } from './common/db-exception.filter.js';
 
 @Module({
   imports: [
@@ -31,11 +33,13 @@ import { AuthModule } from './auth/auth.module.js';
       }),
     }),
     AuthModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     { provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) },
+    { provide: APP_FILTER, useClass: DbExceptionFilter },
   ],
 })
 export class AppModule {}

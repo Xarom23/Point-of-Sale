@@ -88,8 +88,8 @@ Reglas:
 ## Épica 2 — Inventario
 
 ### US-06 · CRUD de categorías (M, 2)
-- [ ] El admin crea, edita y elimina categorías.
-- [ ] Eliminar una categoría que tiene productos devuelve 409.
+- [x] El admin crea, edita y elimina categorías.
+- [ ] Eliminar una categoría que tiene productos devuelve 409. *(se cubre en US-07)*
 
 **Tests primero (e2e):** CRUD completo; borrar una categoría con productos → 409.
 
