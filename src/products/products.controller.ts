@@ -13,7 +13,15 @@ import {
 } from '@nestjs/common';
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator';
+import {
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { Repository } from 'typeorm';
 import { Roles } from '../auth/auth.guard.js';
 import { Role } from '../users/user.entity.js';
@@ -51,6 +59,16 @@ export class UpdateProductDto extends PartialType(
   OmitType(CreateProductDto, ['stock'] as const),
 ) {}
 
+export class ProductsQueryDto {
+  @IsOptional()
+  @IsString()
+  q?: string;
+
+  @IsOptional()
+  @IsIn(['true', 'false'])
+  lowStock?: 'true' | 'false';
+}
+
 @Controller('products')
 export class ProductsController {
   constructor(
@@ -58,14 +76,16 @@ export class ProductsController {
   ) {}
 
   @Get()
-  findAll(@Query('q') q?: string, @Query('lowStock') lowStock?: string) {
+  findAll(@Query() { q, lowStock }: ProductsQueryDto) {
     const query = this.products
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.category', 'c')
       .where('p.active')
       .orderBy('p.name');
     if (q) {
-      query.andWhere('(p.name ILIKE :q OR p.sku ILIKE :q)', { q: `%${q}%` });
+      // Escaped so "%", "_" and "\" in a search match themselves.
+      const pattern = `%${q.replace(/[\\%_]/g, '\\$&')}%`;
+      query.andWhere('(p.name ILIKE :q OR p.sku ILIKE :q)', { q: pattern });
     }
     if (lowStock === 'true') query.andWhere('p.stock <= p.minStock');
     return query.getMany();

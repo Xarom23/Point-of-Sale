@@ -28,6 +28,9 @@ export class SalesService {
     items: { productId: number; qty: number }[],
     discount?: Discount,
   ) {
+    if (discount?.type === 'percent' && discount.value > 100) {
+      throw new BadRequestException('A percent discount cannot exceed 100');
+    }
     // Repeated lines of a product count together against its stock.
     const qtyById = new Map<number, number>();
     for (const { productId, qty } of items) {
