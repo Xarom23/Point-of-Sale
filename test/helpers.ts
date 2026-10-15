@@ -16,7 +16,9 @@ export async function createTestApp(controllers: Type[] = []) {
     controllers,
   }).compile();
   const app: INestApplication<App> = moduleRef.createNestApplication();
-  await app.init();
+  // Listening up front stops supertest from opening and closing the server
+  // around every request, which races under bursts of concurrent requests.
+  await app.listen(0, '127.0.0.1');
 
   // Tokens belong to real rows because sales reference their user.
   const userRepo = app.get(DataSource).getRepository(User);
