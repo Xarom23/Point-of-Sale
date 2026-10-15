@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   ArrayNotEmpty,
   IsArray,
   IsIn,
@@ -46,6 +47,7 @@ class DiscountDto {
 export class CreateSaleDto {
   @IsArray()
   @ArrayNotEmpty()
+  @ArrayMaxSize(200) // every line locks and updates a row inside the sale
   @ValidateNested({ each: true })
   @Type(() => SaleItemDto)
   items: SaleItemDto[];
