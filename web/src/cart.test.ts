@@ -55,8 +55,8 @@ describe('cartTotals', () => {
     expect(cartTotals(cart, { type: 'percent', value: 10 }, 0.16)).toEqual({
       subtotalCents: 4500,
       discountCents: 450,
-      taxCents: 648,
-      totalCents: 4698,
+      taxCents: 559,
+      totalCents: 4050,
     })
   })
 })

@@ -6,30 +6,32 @@ const items = [
 ];
 
 describe('calculateTotals', () => {
-  it('adds tax on top of the subtotal', () => {
+  it('breaks down the tax already included in the prices', () => {
+    // 4500 / 1.16 = 3879.31 → net 3879, tax 621
     expect(calculateTotals(items, undefined, 0.16)).toEqual({
       subtotalCents: 4500,
       discountCents: 0,
-      taxCents: 720,
-      totalCents: 5220,
+      taxCents: 621,
+      totalCents: 4500,
     });
   });
 
-  it('applies a percent discount before tax', () => {
+  it('applies a percent discount and taxes the discounted total', () => {
+    // 4050 / 1.16 = 3491.38 → tax 559
     expect(
       calculateTotals(items, { type: 'percent', value: 10 }, 0.16),
     ).toEqual({
       subtotalCents: 4500,
       discountCents: 450,
-      taxCents: 648,
-      totalCents: 4698,
+      taxCents: 559,
+      totalCents: 4050,
     });
   });
 
   it('applies a fixed discount in cents', () => {
     expect(
       calculateTotals(items, { type: 'amount', value: 500 }, 0.16),
-    ).toMatchObject({ discountCents: 500, taxCents: 640, totalCents: 4640 });
+    ).toMatchObject({ discountCents: 500, taxCents: 552, totalCents: 4000 });
   });
 
   it('never discounts more than the subtotal', () => {
@@ -42,10 +44,10 @@ describe('calculateTotals', () => {
   });
 
   it('rounds half-cents up', () => {
-    // 1 * 15 * 0.10 = 1.5 cents of tax → 2
+    // 15 / (1 + 1.00) = 7.5 → net 8, tax 7
     expect(
-      calculateTotals([{ qty: 1, unitPriceCents: 15 }], undefined, 0.1),
-    ).toMatchObject({ taxCents: 2, totalCents: 17 });
+      calculateTotals([{ qty: 1, unitPriceCents: 15 }], undefined, 1),
+    ).toMatchObject({ taxCents: 7, totalCents: 15 });
     // 5% of 10 cents = 0.5 → 1
     expect(
       calculateTotals(
