@@ -11,8 +11,9 @@ export type Totals = {
 };
 
 /**
- * Prices exclude tax. A percent discount is a whole number (10 = 10%);
- * an amount discount is in cents. Tax applies after the discount.
+ * Prices include tax (shelf price = price charged). A percent discount is a
+ * whole number (10 = 10%); an amount discount is in cents. `taxCents` is the
+ * tax contained in the discounted total, shown on the receipt.
  */
 export function calculateTotals(
   items: { qty: number; unitPriceCents: number }[],
@@ -28,15 +29,16 @@ export function calculateTotals(
       ? Math.round((subtotalCents * discount.value) / 100)
       : (discount?.value ?? 0);
   const discountCents = Math.min(requested, subtotalCents);
-  // Basis points keep the multiplication in integers, so x.5 rounds exactly.
+  const totalCents = subtotalCents - discountCents;
+  // Basis points keep the arithmetic in integers, so x.5 rounds exactly.
   const taxBasisPoints = Math.round(taxRate * 10_000);
-  const taxCents = Math.round(
-    ((subtotalCents - discountCents) * taxBasisPoints) / 10_000,
+  const netCents = Math.round(
+    (totalCents * 10_000) / (10_000 + taxBasisPoints),
   );
   return {
     subtotalCents,
     discountCents,
-    taxCents,
-    totalCents: subtotalCents - discountCents + taxCents,
+    taxCents: totalCents - netCents,
+    totalCents,
   };
 }

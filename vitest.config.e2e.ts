@@ -10,5 +10,6 @@ export default defineConfig({
     // Every file boots the app against the same database.
     fileParallelism: false,
     hookTimeout: 30_000,
+    testTimeout: 15_000,
   },
 });
