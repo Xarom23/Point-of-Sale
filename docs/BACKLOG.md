@@ -102,8 +102,8 @@ Reglas:
 **Tests primero (e2e):** SKU duplicado → 409; precio negativo → 400; un producto borrado no aparece en `GET /products`; `?q=` filtra.
 
 ### US-08 · Alerta de stock bajo (M, 1)
-- [ ] `GET /products?lowStock=true` devuelve solo los productos con `stock <= min_stock`.
-- [ ] Badge rojo en la lista y en el dashboard.
+- [x] `GET /products?lowStock=true` devuelve solo los productos con `stock <= min_stock`.
+- [x] Badge rojo en la lista de productos. *(el del dashboard llega con US-16)*
 
 **Tests primero (e2e):** con 2 productos (uno bajo y uno normal), solo se devuelve el bajo.
 

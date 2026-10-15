@@ -1,5 +1,6 @@
-import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Trash2, TriangleAlert } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -45,8 +46,9 @@ const DUPLICATE_SKU = 'Ya existe un producto con ese SKU'
 
 export function ProductsPage() {
   const [q, setQ] = useState('')
+  const [lowOnly, setLowOnly] = useState(false)
   const { data: products = [], reload } = useFetch<Product[]>(
-    `/products?q=${encodeURIComponent(q)}`,
+    `/products?q=${encodeURIComponent(q)}${lowOnly ? '&lowStock=true' : ''}`,
   )
   const { error, run } = useAction()
   const [editing, setEditing] = useState<Product | 'new' | null>(null)
@@ -67,14 +69,24 @@ export function ProductsPage() {
         </Button>
       </div>
 
-      <Input
-        type="search"
-        placeholder="Buscar por nombre o SKU"
-        aria-label="Buscar productos"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        className="max-w-sm"
-      />
+      <div className="flex flex-wrap gap-2">
+        <Input
+          type="search"
+          placeholder="Buscar por nombre o SKU"
+          aria-label="Buscar productos"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="max-w-sm"
+        />
+        <Button
+          variant={lowOnly ? 'destructive' : 'outline'}
+          aria-pressed={lowOnly}
+          onClick={() => setLowOnly(!lowOnly)}
+        >
+          <TriangleAlert aria-hidden />
+          Solo stock bajo
+        </Button>
+      </div>
       {error && (
         <p role="alert" className="text-sm text-destructive">
           {error}
@@ -101,7 +113,15 @@ export function ProductsPage() {
               <TableCell className="text-right tabular-nums">
                 {formatMoney(p.priceCents)}
               </TableCell>
-              <TableCell className="text-right tabular-nums">{p.stock}</TableCell>
+              <TableCell className="text-right tabular-nums">
+                {p.stock <= p.minStock ? (
+                  <Badge variant="destructive" title={`Mínimo: ${p.minStock}`}>
+                    {p.stock} · bajo
+                  </Badge>
+                ) : (
+                  p.stock
+                )}
+              </TableCell>
               <TableCell className="text-right">
                 <Button size="icon" variant="ghost" aria-label={`Editar ${p.name}`} onClick={() => setEditing(p)}>
                   <Pencil />
