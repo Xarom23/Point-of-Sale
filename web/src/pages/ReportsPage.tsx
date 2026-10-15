@@ -24,7 +24,7 @@ type SummaryRow = { period: string; salesCount: number; totalCents: number }
 type TopRow = { productId: number; name: string; qty: number; totalCents: number }
 
 /** YYYY-MM-DD in the browser's timezone ('en-CA' formats dates that way). */
-const isoDate = (d: Date) => d.toLocaleDateString('en-CA')
+export const isoDate = (d: Date) => d.toLocaleDateString('en-CA')
 
 export function ReportsPage() {
   // Defaults to the current month.

@@ -7,8 +7,9 @@ describe('navFor', () => {
     expect(paths('cashier')).toEqual(['/', '/sales'])
   })
 
-  it('shows an admin every section', () => {
+  it('shows an admin every section, starting at the dashboard', () => {
     expect(paths('admin')).toEqual([
+      '/dashboard',
       '/',
       '/sales',
       '/products',
