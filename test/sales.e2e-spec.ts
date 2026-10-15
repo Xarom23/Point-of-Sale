@@ -155,6 +155,11 @@ describe('Sales (e2e)', () => {
     await cashier().post('/sales', body).expect(400);
   });
 
+  it('exposes the tax rate for the checkout preview', async () => {
+    const res = await cashier().get('/sales/config').expect(200);
+    expect(res.body).toEqual({ taxRate: 0.16 });
+  });
+
   it('requires authentication', async () => {
     await ctx
       .http()
