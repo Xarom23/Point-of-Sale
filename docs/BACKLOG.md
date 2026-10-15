@@ -108,7 +108,7 @@ Reglas:
 **Tests primero (e2e):** con 2 productos (uno bajo y uno normal), solo se devuelve el bajo.
 
 ### US-09 · Ajuste manual de stock (S, 1)
-- [ ] El admin suma o resta stock indicando un motivo; el stock nunca queda negativo (si quedaría, 409).
+- [x] El admin suma o resta stock indicando un motivo; el stock nunca queda negativo (si quedaría, 409).
 
 ## Épica 3 — Ventas (checkout)
 
