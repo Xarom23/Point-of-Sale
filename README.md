@@ -42,6 +42,18 @@ npm install && npm run start:dev          # API en :3000
 cd web && npm install && npm run dev      # web en :5173
 ```
 
+### Datos de prueba
+
+```bash
+npm run seed                                     # solo si el catálogo está vacío
+npm run seed -- --reset                          # reemplaza catálogo, ventas y ajustes
+docker compose exec api node dist/seed --reset   # en la pila de Docker
+```
+
+Genera 7 categorías, 39 productos, los cajeros `cajero1` y `cajero2` (contraseña `cajero123`) y unos 90 días de ventas en horario de tienda, con descuentos ocasionales, reabastos y mermas registrados como ajustes, y algunos productos en stock bajo. Es determinista: siempre produce los mismos datos. Los usuarios existentes no se tocan.
+
+Los tests e2e usan la misma base de datos y vacían estas tablas: después de correrlos, vuelve a ejecutar el seed.
+
 ### Variables de entorno (`.env`)
 
 | Variable | Uso |
@@ -53,6 +65,7 @@ cd web && npm install && npm run dev      # web en :5173
 | `TAX_RATE` | Tasa de IVA (`0.16`) |
 | `APP_TIMEZONE` | Zona horaria de la tienda para fechas y reportes (`America/Mexico_City`) |
 | `CORS_ORIGIN` | Origen permitido para el frontend |
+| `DB_LOGGING` | `true` imprime cada consulta SQL (apagado por defecto) |
 
 En `web/.env`: `VITE_API_URL` es la URL de la API.
 
