@@ -88,6 +88,18 @@ describe('Sales (e2e)', () => {
     expect(await stockOf(2)).toBe(2);
   });
 
+  it('never oversells under concurrent checkouts', async () => {
+    const attempts = await Promise.all(
+      Array.from({ length: 5 }, () =>
+        cashier().post('/sales', { items: [{ productId: 2, qty: 1 }] }),
+      ),
+    );
+
+    const statuses = attempts.map((r) => r.status).sort();
+    expect(statuses).toEqual([201, 201, 409, 409, 409]);
+    expect(await stockOf(2)).toBe(0);
+  });
+
   it('adds up repeated lines of the same product before checking stock', async () => {
     await cashier()
       .post('/sales', {
