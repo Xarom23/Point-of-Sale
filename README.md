@@ -72,7 +72,7 @@ En `web/.env`: `VITE_API_URL` es la URL de la API.
 El proyecto se desarrolló con **TDD**: cada criterio de aceptación tiene su test, escrito antes del código.
 
 ```bash
-npm test            # unitarios de la API (cálculo de totales)
+npm test            # unitarios de la API (cálculo de totales, errores de BD → HTTP)
 npm run test:e2e    # e2e de la API contra PostgreSQL real (requiere `docker compose up -d db`)
 npm run lint
 cd web && npm test  # cliente HTTP, carrito, dinero y menú por rol
@@ -88,7 +88,7 @@ Los e2e no simulan la base de datos: corren contra el Postgres de Docker, en su 
 - **Sin sobreventa.** La venta bloquea los productos (`SELECT … FOR UPDATE`), valida el stock y lo descuenta en una sola transacción. Si falta stock de un producto, se rechaza la venta completa (409). Un test e2e lanza ventas concurrentes para comprobarlo.
 - **Histórico inmutable.** Cada línea de venta guarda el nombre y el precio del momento, y los productos se desactivan en lugar de borrarse.
 - **Fechas en la zona de la tienda.** Los filtros y el agrupado por día usan `APP_TIMEZONE`: una venta a las 8 p.m. en México cuenta para ese día, aunque en UTC ya sea el siguiente.
-- **Autorización global.** Un guard exige JWT en todo salvo lo marcado con `@Public()`, y `@Roles()` restringe por rol.
+- **Autorización global.** Un guard exige JWT en todo salvo lo marcado con `@Public()`, y `@Roles()` restringe por rol. El guard toma el usuario y su rol de la base en cada petición, así que desactivar o degradar a alguien surte efecto de inmediato. El login admite 5 intentos por minuto por IP y usuario (429 después).
 
 ## API
 
@@ -123,5 +123,6 @@ docs/BACKLOG.md Product backlog, historias de usuario y criterios de aceptación
 ## Limitaciones conocidas
 
 - El esquema se crea con `synchronize` de TypeORM. Antes de producción hay que pasar a migraciones.
-- El token se valida sin consultar la base de datos: un usuario desactivado conserva el acceso hasta que su token expira.
+- El límite de intentos de login vive en la memoria del proceso: con más de una instancia de la API hay que moverlo a un store compartido.
+- `POST /sales` no es idempotente y solo `/sales` está paginado. Más en [docs/TESTING.md](docs/TESTING.md#limitaciones-conocidas).
 - Fuera del MVP: turnos y corte de caja, devoluciones, varias sucursales y facturación.
