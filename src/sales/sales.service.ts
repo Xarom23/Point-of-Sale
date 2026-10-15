@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { DataSource, In } from 'typeorm';
 import type { JwtPayload } from '../auth/auth.guard.js';
+import { type DateRangeDto, inDateRange } from '../common/date-range.js';
 import { Product } from '../products/product.entity.js';
 import { Role } from '../users/user.entity.js';
 import { Sale } from './sale.entity.js';
@@ -68,6 +69,33 @@ export class SalesService {
       );
       return this.findOne(id, undefined, em.getRepository(Sale));
     });
+  }
+
+  get timezone() {
+    return this.config.get<string>('APP_TIMEZONE', 'America/Mexico_City');
+  }
+
+  /** Newest first; a cashier only sees their own sales. */
+  async list(
+    viewer: JwtPayload,
+    range: DateRangeDto,
+    page: number,
+    limit: number,
+  ) {
+    const query = this.dataSource
+      .getRepository(Sale)
+      .createQueryBuilder('s')
+      .leftJoinAndSelect('s.user', 'u')
+      .orderBy('s.createdAt', 'DESC')
+      .addOrderBy('s.id', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit);
+    if (viewer.role === Role.Cashier) {
+      query.andWhere('s.userId = :userId', { userId: viewer.sub });
+    }
+    inDateRange(query, 's.createdAt', range, this.timezone);
+    const [data, total] = await query.getManyAndCount();
+    return { data, total };
   }
 
   /** A cashier only sees their own sales; others look like a 404. */
