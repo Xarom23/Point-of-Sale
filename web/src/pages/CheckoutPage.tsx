@@ -1,5 +1,6 @@
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { useReducer, useState, type KeyboardEvent } from 'react'
+import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -17,7 +18,6 @@ import { formatMoney, toCents } from '@/lib/money'
 import type { Product } from '@/pages/ProductsPage'
 
 type DiscountType = 'none' | Discount['type']
-export type Sale = { id: number; totalCents: number }
 
 function toDiscount(type: DiscountType, raw: string): Discount | undefined {
   if (type === 'none' || raw === '') return undefined
@@ -34,7 +34,7 @@ export function CheckoutPage() {
   const [cart, dispatch] = useReducer(cartReducer, [])
   const [discountType, setDiscountType] = useState<DiscountType>('none')
   const [discountRaw, setDiscountRaw] = useState('')
-  const [lastSale, setLastSale] = useState<Sale>()
+  const navigate = useNavigate()
   const { error, run } = useAction('Stock insuficiente: revisa las cantidades del carrito')
 
   const taxRate = config?.taxRate ?? 0
@@ -43,7 +43,6 @@ export function CheckoutPage() {
 
   const add = (product: Product) => {
     dispatch({ type: 'add', product })
-    setLastSale(undefined)
   }
 
   // Barcode scanners type the SKU and press Enter.
@@ -59,20 +58,17 @@ export function CheckoutPage() {
   }
 
   const charge = async () => {
-    await run(async () => {
-      const sale = await api<Sale>('/sales', {
+    const charged = await run(async () => {
+      const sale = await api<{ id: number }>('/sales', {
         method: 'POST',
         body: {
           items: cart.map((l) => ({ productId: l.product.id, qty: l.qty })),
           discount,
         },
       })
-      setLastSale(sale)
-      dispatch({ type: 'clear' })
-      setDiscountType('none')
-      setDiscountRaw('')
+      navigate(`/receipt/${sale.id}`)
     })
-    reload()
+    if (!charged) reload() // refresh stock after a 409
   }
 
   return (
@@ -197,11 +193,6 @@ export function CheckoutPage() {
         {error && (
           <p role="alert" className="text-sm text-destructive">
             {error}
-          </p>
-        )}
-        {lastSale && (
-          <p role="status" className="rounded-md bg-muted p-3 text-sm">
-            Venta #{lastSale.id} registrada · {formatMoney(lastSale.totalCents)}
           </p>
         )}
 

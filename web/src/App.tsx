@@ -7,6 +7,7 @@ import { navFor } from '@/nav'
 import { CategoriesPage } from '@/pages/CategoriesPage'
 import { CheckoutPage } from '@/pages/CheckoutPage'
 import { ProductsPage } from '@/pages/ProductsPage'
+import { ReceiptPage } from '@/pages/ReceiptPage'
 
 const PAGES: Record<string, ReactNode> = {
   '/': <CheckoutPage />,
@@ -41,6 +42,7 @@ export default function App() {
           />
         ))}
       </Route>
+      <Route path="/receipt/:id" element={<ReceiptPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
