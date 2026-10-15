@@ -39,11 +39,11 @@ describe('Products (e2e)', () => {
     ['fractional cents', { priceCents: 18.5 }],
     ['negative stock', { stock: -1 }],
     ['missing name', { name: '' }],
-  ])('rejects %s with 400', (_, patch) =>
-    admin()
+  ])('rejects %s with 400', async (_, patch) => {
+    await admin()
       .post('/products', { ...coke, ...patch })
-      .expect(400),
-  );
+      .expect(400);
+  });
 
   it('rejects an unknown category with 400', () =>
     admin()

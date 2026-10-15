@@ -7,6 +7,7 @@ import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
 import { CategoriesModule } from './categories/categories.module.js';
 import { DbExceptionFilter } from './common/db-exception.filter.js';
+import { ProductsModule } from './products/products.module.js';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { DbExceptionFilter } from './common/db-exception.filter.js';
     }),
     AuthModule,
     CategoriesModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [
