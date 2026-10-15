@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
-import { Role } from './../src/users/user.entity.js';
+import { Role, type User } from './../src/users/user.entity.js';
 import { createTestApp } from './helpers.js';
 
 type Method = 'get' | 'post' | 'patch' | 'delete';
@@ -146,7 +146,9 @@ describe('Access control (e2e)', () => {
 
     it.each(['', 'abc', 'a.b.c', '...', `${'x'.repeat(4000)}`])(
       'rejects the malformed token "%s" with 401',
-      (token) => me(`Bearer ${token}`).expect(401),
+      async (token) => {
+        await me(`Bearer ${token}`).expect(401);
+      },
     );
 
     it('rejects a valid token for a user that does not exist with 401', () =>
@@ -154,7 +156,7 @@ describe('Access control (e2e)', () => {
   });
 
   describe('revocation: the database, not the token, is the authority', () => {
-    const createUser = async (role: string) =>
+    const createUser = async (role: Role) =>
       (
         await ctx
           .http('admin')
@@ -164,12 +166,12 @@ describe('Access control (e2e)', () => {
             role,
           })
           .expect(201)
-      ).body as { id: number; username: string; role: 'admin' | 'cashier' };
+      ).body as Pick<User, 'id' | 'username' | 'role'>;
     const bearer = async (user: Parameters<typeof ctx.sign>[0]) =>
       `Bearer ${await ctx.sign(user)}`;
 
     it('rejects the still-valid token of a deactivated user with 401', async () => {
-      const user = await createUser('cashier');
+      const user = await createUser(Role.Cashier);
       const auth = await bearer(user);
       await me(auth).expect(200);
 
@@ -181,7 +183,7 @@ describe('Access control (e2e)', () => {
     });
 
     it('drops admin rights as soon as an admin is demoted', async () => {
-      const user = await createUser('admin');
+      const user = await createUser(Role.Admin);
       const auth = await bearer(user);
       await ctx.http().get('/users').set('Authorization', auth).expect(200);
 
@@ -210,7 +212,9 @@ describe('Access control (e2e)', () => {
       ['Basic credentials', () => `Basic ${btoa('admin:admin')}`],
       ['a doubled space', () => `Bearer  ${token}`],
       ['the token alone', () => token],
-    ])('rejects %s with 401', (_, header) => me(header()).expect(401));
+    ])('rejects %s with 401', async (_, header) => {
+      await me(header()).expect(401);
+    });
 
     it('ignores a token sent in the query string', () =>
       ctx.http().get(`/auth/me?access_token=${token}`).expect(401));
