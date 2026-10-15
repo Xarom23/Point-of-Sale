@@ -33,7 +33,7 @@ import { UsersModule } from './users/users.module.js';
 
         // Enable synchronization for development purposes (not recommended for production)
         synchronize: true,
-        logging: process.env.NODE_ENV !== 'test',
+        logging: configService.get('DB_LOGGING') === 'true',
       }),
     }),
     AuthModule,

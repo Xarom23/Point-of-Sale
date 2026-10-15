@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Type } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
@@ -9,13 +9,16 @@ import { Role as UserRole, User } from './../src/users/user.entity.js';
 
 type Role = 'admin' | 'cashier';
 
-/** Boots the whole app against the dev database with role-scoped clients. */
-export async function createTestApp() {
+/** Boots the whole app against the test database with role-scoped clients. */
+export async function createTestApp(controllers: Type[] = []) {
   const moduleRef = await Test.createTestingModule({
     imports: [AppModule],
+    controllers,
   }).compile();
   const app: INestApplication<App> = moduleRef.createNestApplication();
-  await app.init();
+  // Listening up front stops supertest from opening and closing the server
+  // around every request, which races under bursts of concurrent requests.
+  await app.listen(0, '127.0.0.1');
 
   // Tokens belong to real rows because sales reference their user.
   const userRepo = app.get(DataSource).getRepository(User);
@@ -30,7 +33,11 @@ export async function createTestApp() {
       })),
   };
   const jwt = app.get(JwtService);
-  const sign = ({ id, username, role }: User) =>
+  const sign = ({
+    id,
+    username,
+    role,
+  }: Pick<User, 'id' | 'username' | 'role'>) =>
     jwt.signAsync({ sub: id, username, role });
   const tokens: Record<Role, string> = {
     admin: await sign(users.admin),
@@ -57,5 +64,43 @@ export async function createTestApp() {
       .get(DataSource)
       .query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY CASCADE`);
 
-  return { app, http, truncate, users };
+  /** Empties sales and the catalog, then creates category 1 and `count` products. */
+  const resetCatalog = async (count = 1, product: object = {}) => {
+    await truncate(
+      'sale_items',
+      'sales',
+      'stock_adjustments',
+      'products',
+      'categories',
+    );
+    await http('admin').post('/categories', { name: 'General' }).expect(201);
+    const products: { id: number; stock: number }[] = [];
+    for (let i = 1; i <= count; i++) {
+      const n = String(i).padStart(3, '0');
+      const res = await http('admin')
+        .post('/products', {
+          name: `Product ${n}`,
+          sku: `SKU-${n}`,
+          priceCents: 1000,
+          stock: 10,
+          minStock: 0,
+          categoryId: 1,
+          ...product,
+        })
+        .expect(201);
+      products.push(res.body);
+    }
+    return products;
+  };
+
+  /** Deletes every user except the admin and the helper's cashier. */
+  const resetUsers = () =>
+    app
+      .get(DataSource)
+      .query(`DELETE FROM users WHERE id NOT IN ($1, $2)`, [
+        users.admin.id,
+        users.cashier.id,
+      ]);
+
+  return { app, http, truncate, users, sign, resetCatalog, resetUsers };
 }

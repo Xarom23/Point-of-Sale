@@ -38,6 +38,8 @@ export class DbExceptionFilter implements ExceptionFilter {
         ? new ConflictException('Record is in use')
         : new BadRequestException('Related record not found');
     }
+    // Class 22 (data exception): out-of-range numbers, null bytes, bad casts.
+    if (code?.startsWith('22')) return new BadRequestException('Invalid value');
     this.logger.error(err);
     return new InternalServerErrorException();
   }
