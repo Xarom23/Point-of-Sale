@@ -31,7 +31,7 @@ import { SalesModule } from './sales/sales.module.js';
 
         // Enable synchronization for development purposes (not recommended for production)
         synchronize: true,
-        logging: true,
+        logging: process.env.NODE_ENV !== 'test',
       }),
     }),
     AuthModule,
@@ -42,7 +42,10 @@ import { SalesModule } from './sales/sales.module.js';
   controllers: [AppController],
   providers: [
     AppService,
-    { provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) },
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({ whitelist: true, transform: true }),
+    },
     { provide: APP_FILTER, useClass: DbExceptionFilter },
   ],
 })

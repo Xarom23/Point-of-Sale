@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { Type } from 'class-transformer';
 import {
@@ -13,10 +14,12 @@ import {
   IsIn,
   IsInt,
   IsOptional,
+  Max,
   Min,
   ValidateNested,
 } from 'class-validator';
 import { CurrentUser, type JwtPayload } from '../auth/auth.guard.js';
+import { DateRangeDto } from '../common/date-range.js';
 import { SalesService } from './sales.service.js';
 
 class SaleItemDto {
@@ -53,9 +56,32 @@ export class CreateSaleDto {
   discount?: DiscountDto;
 }
 
+export class SalesQueryDto extends DateRangeDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page = 1;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit = 20;
+}
+
 @Controller('sales')
 export class SalesController {
   constructor(private readonly sales: SalesService) {}
+
+  @Get()
+  list(
+    @CurrentUser() user: JwtPayload,
+    @Query() { page, limit, ...range }: SalesQueryDto,
+  ) {
+    return this.sales.list(user, range, page, limit);
+  }
 
   @Post()
   create(
