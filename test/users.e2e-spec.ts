@@ -58,7 +58,9 @@ describe('Users (e2e)', () => {
     const res = await admin().get('/users').expect(200);
 
     const names = res.body.map((u: { username: string }) => u.username);
-    expect(names).toEqual([...names].sort());
+    expect(names).toEqual(
+      [...names].sort((x: string, y: string) => x.localeCompare(y)),
+    );
     expect(names).toContain('maria');
     expect(JSON.stringify(res.body)).not.toMatch(/password/i);
   });

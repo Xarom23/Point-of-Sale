@@ -10,6 +10,7 @@ import { DbExceptionFilter } from './common/db-exception.filter.js';
 import { ProductsModule } from './products/products.module.js';
 import { ReportsModule } from './reports/reports.module.js';
 import { SalesModule } from './sales/sales.module.js';
+import { UsersModule } from './users/users.module.js';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { SalesModule } from './sales/sales.module.js';
     ProductsModule,
     SalesModule,
     ReportsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [
