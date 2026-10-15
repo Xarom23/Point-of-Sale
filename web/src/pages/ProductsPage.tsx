@@ -1,4 +1,4 @@
-import { Pencil, Plus, Trash2, TriangleAlert } from 'lucide-react'
+import { PackagePlus, Pencil, Plus, Trash2, TriangleAlert } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -30,6 +30,7 @@ import { api } from '@/lib/api'
 import { useAction, useFetch } from '@/lib/hooks'
 import { formatMoney, toCents } from '@/lib/money'
 import type { Category } from '@/pages/CategoriesPage'
+import { StockDialog } from '@/pages/StockDialog'
 
 export type Product = {
   id: number
@@ -52,6 +53,7 @@ export function ProductsPage() {
   )
   const { error, run } = useAction()
   const [editing, setEditing] = useState<Product | 'new' | null>(null)
+  const [adjusting, setAdjusting] = useState<Product | null>(null)
 
   const remove = async ({ id, name }: Product) => {
     if (!confirm(`¿Eliminar el producto "${name}"?`)) return
@@ -122,7 +124,10 @@ export function ProductsPage() {
                   p.stock
                 )}
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-right whitespace-nowrap">
+                <Button size="icon" variant="ghost" aria-label={`Ajustar stock de ${p.name}`} onClick={() => setAdjusting(p)}>
+                  <PackagePlus />
+                </Button>
                 <Button size="icon" variant="ghost" aria-label={`Editar ${p.name}`} onClick={() => setEditing(p)}>
                   <Pencil />
                 </Button>
@@ -148,6 +153,16 @@ export function ProductsPage() {
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null)
+            reload()
+          }}
+        />
+      )}
+      {adjusting && (
+        <StockDialog
+          product={adjusting}
+          onClose={() => setAdjusting(null)}
+          onSaved={() => {
+            setAdjusting(null)
             reload()
           }}
         />
