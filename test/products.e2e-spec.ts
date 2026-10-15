@@ -76,6 +76,29 @@ describe('Products (e2e)', () => {
     expect(bySku.body.map((p: { sku: string }) => p.sku)).toEqual(['SAB45']);
   });
 
+  it('filters products at or below their minimum stock', async () => {
+    await admin().post('/products', { ...coke, stock: 10, minStock: 3 });
+    await admin().post('/products', {
+      ...coke,
+      sku: 'LOW',
+      stock: 3,
+      minStock: 3,
+    });
+    await admin().post('/products', {
+      ...coke,
+      sku: 'OUT',
+      stock: 0,
+      minStock: 1,
+    });
+
+    const res = await admin().get('/products?lowStock=true').expect(200);
+
+    expect(res.body.map((p: { sku: string }) => p.sku).sort()).toEqual([
+      'LOW',
+      'OUT',
+    ]);
+  });
+
   it('lets an admin update a product but not its stock', async () => {
     await admin().post('/products', coke);
     const res = await admin()
