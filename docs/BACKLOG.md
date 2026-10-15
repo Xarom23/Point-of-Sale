@@ -82,8 +82,8 @@ Reglas:
 **Tests primero (e2e):** sin token → 401; cajero en `POST /products` → 403; admin → 201.
 
 ### US-05 · Admin gestiona usuarios (S, 2)
-- [ ] El admin puede crear un usuario, asignarle rol y desactivarlo.
-- [ ] Un usuario desactivado no puede iniciar sesión (401).
+- [x] El admin puede crear un usuario, asignarle rol y desactivarlo.
+- [x] Un usuario desactivado no puede iniciar sesión (401).
 
 ## Épica 2 — Inventario
 
