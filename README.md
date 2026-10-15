@@ -52,8 +52,6 @@ docker compose exec api node dist/seed --reset   # en la pila de Docker
 
 Genera 7 categorías, 39 productos, los cajeros `cajero1` y `cajero2` (contraseña `cajero123`) y unos 90 días de ventas en horario de tienda, con descuentos ocasionales, reabastos y mermas registrados como ajustes, y algunos productos en stock bajo. Es determinista: siempre produce los mismos datos. Los usuarios existentes no se tocan.
 
-Los tests e2e usan la misma base de datos y vacían estas tablas: después de correrlos, vuelve a ejecutar el seed.
-
 ### Variables de entorno (`.env`)
 
 | Variable | Uso |
@@ -80,7 +78,7 @@ npm run lint
 cd web && npm test  # cliente HTTP, carrito, dinero y menú por rol
 ```
 
-Los e2e no simulan la base de datos: corren contra el Postgres de Docker y limpian sus tablas.
+Los e2e no simulan la base de datos: corren contra el Postgres de Docker, en su propia base `pos_test` (se crea sola), así que no tocan los datos del seed. Detalle de la estrategia de pruebas en [docs/TESTING.md](docs/TESTING.md).
 
 ## Decisiones técnicas
 
