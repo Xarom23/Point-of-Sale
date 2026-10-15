@@ -30,7 +30,11 @@ export async function createTestApp() {
       })),
   };
   const jwt = app.get(JwtService);
-  const sign = ({ id, username, role }: User) =>
+  const sign = ({
+    id,
+    username,
+    role,
+  }: Pick<User, 'id' | 'username' | 'role'>) =>
     jwt.signAsync({ sub: id, username, role });
   const tokens: Record<Role, string> = {
     admin: await sign(users.admin),
@@ -57,5 +61,43 @@ export async function createTestApp() {
       .get(DataSource)
       .query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY CASCADE`);
 
-  return { app, http, truncate, users };
+  /** Empties sales and the catalog, then creates category 1 and `count` products. */
+  const resetCatalog = async (count = 1, product: object = {}) => {
+    await truncate(
+      'sale_items',
+      'sales',
+      'stock_adjustments',
+      'products',
+      'categories',
+    );
+    await http('admin').post('/categories', { name: 'General' }).expect(201);
+    const products: { id: number; stock: number }[] = [];
+    for (let i = 1; i <= count; i++) {
+      const n = String(i).padStart(3, '0');
+      const res = await http('admin')
+        .post('/products', {
+          name: `Product ${n}`,
+          sku: `SKU-${n}`,
+          priceCents: 1000,
+          stock: 10,
+          minStock: 0,
+          categoryId: 1,
+          ...product,
+        })
+        .expect(201);
+      products.push(res.body);
+    }
+    return products;
+  };
+
+  /** Deletes every user except the admin and the helper's cashier. */
+  const resetUsers = () =>
+    app
+      .get(DataSource)
+      .query(`DELETE FROM users WHERE id NOT IN ($1, $2)`, [
+        users.admin.id,
+        users.cashier.id,
+      ]);
+
+  return { app, http, truncate, users, sign, resetCatalog, resetUsers };
 }
